@@ -249,6 +249,67 @@ SELECT NAME, GRADE FROM STUDENTS WHERE GRADE <= 10;
 - PARTITION BY はグループ単位で分析するために使用
 - 最近の SQL では ANSI 標準構文（CASE, COALESCE, FETCH FIRST など）も推奨される
 
+# SQL の SELECT 文に使える装飾句まとめ
+
+SQL で `SELECT` の後に使える「装飾句（修飾句）」はいくつかあります。`DISTINCT` はその代表例ですが、他にもデータの抽出・計算・形式に関わるものがあります。
+
+---
+
+## 1. DISTINCT
+
+- **用途**: 重複行を除外して結果を返す。
+
+## 2. ALL
+
+- **用途**: 重複を含めて全ての行を取得（`DISTINCT` と反対の意味）。
+- ※デフォルトで `ALL` が有効なので、省略可能。
+
+## 3. TOP / LIMIT / FETCH FIRST
+
+- **用途**: 取得する行数を制限する。
+
+## 4. SELECT 文と組み合わせる他の句
+
+- `FROM` / `WHERE` / `GROUP BY` / `HAVING` / `ORDER BY` などは `SELECT` 文の一部で、`DISTINCT` と組み合わせて使われます。
+
+## 5. 集計関数との組み合わせ
+
+- `DISTINCT` を集計関数の中で使うことも可能。
+
+---
+
+## 例：SQL コード
+
+```sql
+-- DISTINCT: 重複を除く
+SELECT DISTINCT column_name
+FROM table_name;
+
+-- ALL: 重複を含めて取得（省略可能）
+SELECT ALL column_name
+FROM table_name;
+
+-- TOP（SQL Serverの場合）
+SELECT TOP 5 column_name
+FROM table_name;
+
+-- LIMIT（MySQL / PostgreSQLの場合）
+SELECT column_name
+FROM table_name
+LIMIT 5;
+
+-- SELECT文の他の句との組み合わせ
+SELECT DISTINCT column_name
+FROM table_name
+WHERE condition
+GROUP BY column_name
+HAVING COUNT(*) > 1
+ORDER BY column_name;
+
+-- 集計関数との組み合わせ
+SELECT COUNT(DISTINCT column_name)
+FROM table_name;
+
 # Oracle LIKE パターン検索例 20 選
 
 -- 1. 特定文字で始まる
@@ -310,6 +371,7 @@ SELECT \* FROM products WHERE product_name LIKE 'S%\_Pro%';
 
 -- 20. LIKE と ESCAPE の組み合わせ
 SELECT \* FROM paths WHERE path LIKE 'C:\Windows\%' ESCAPE '\';
+```
 
 # Oracle 正規表現リファレンス
 
@@ -330,7 +392,7 @@ SELECT \* FROM paths WHERE path LIKE 'C:\Windows\%' ESCAPE '\';
 ## 2. 主なメタ文字・構文
 
 | メタ文字 | 説明                                                |
-| -------- | --------------------------------------------------- | ------------ | ------ |
+| -------- | --------------------------------------------------- | ------ |
 | `.`      | 任意の 1 文字                                       |
 | `^`      | 文字列の先頭                                        |
 | `$`      | 文字列の末尾                                        |
@@ -342,7 +404,7 @@ SELECT \* FROM paths WHERE path LIKE 'C:\Windows\%' ESCAPE '\';
 | `{n,m}`  | 直前の文字の n 回以上 m 回以下                      |
 | `[]`     | 文字クラス（例: `[a-z]` は a ～ z の任意の 1 文字） |
 | `[^]`    | 否定文字クラス（例: `[^0-9]` は数字以外の 1 文字）  |
-| `        | `                                                   | OR（例: `cat | dog`） |
+| `        | `   OR（例:`cat                                     | dog`） |
 | `()`     | グループ化（キャプチャ）                            |
 | `\\d`    | 数字 `[0-9]`                                        |
 | `\\D`    | 数字以外 `[^0-9]`                                   |
@@ -473,9 +535,139 @@ ADD CONSTRAINT chk_age CHECK (age >= 18);
 
 ---
 
-💡 **ポイント**
+# SQL・DDL・DML・DQL・MDL まとめ
 
-- **PK** = 「身分証明書」
-- **UK** = 「ビジネスルールでのユニーク制約」
-- **FK** = 「他テーブルとの関係を保持」
-- **CK** = 「値が正しいかのルール」
+## 1. SQL の大分類
+
+SQL は目的に応じて大きく分けると以下の 3 種類があります：
+
+| カテゴリ                             | 主な用途                                 | 代表的なコマンド              | MDL との関係                            |
+| ------------------------------------ | ---------------------------------------- | ----------------------------- | --------------------------------------- |
+| **DDL (Data Definition Language)**   | データベースやテーブルの構造を定義・変更 | CREATE, ALTER, DROP, TRUNCATE | 実行時に **MDL Exclusive Lock**         |
+| **DML (Data Manipulation Language)** | データの追加・更新・削除                 | INSERT, UPDATE, DELETE        | 実行時に **MDL Shared Lock** + 行ロック |
+| **DQL (Data Query Language)**        | データの検索                             | SELECT                        | **MDL Shared Lock**（構造整合性確保）   |
+
+> 補足：DCL（権限管理）や TCL（トランザクション制御）もありますが、通常のデータ操作とは少し目的が異なります。
+
+---
+
+## 2. MDL（Metadata Lock）とは
+
+**MDL（Metadata Lock）** は、MySQL や MariaDB でテーブルやデータベースに対する **メタデータ整合性を保証するためのロック** です。
+
+- データ内容ではなく **テーブル構造や列・制約・インデックス** を対象にする
+- DDL/DML 実行時に自動取得される
+- 競合時は他のセッションがロック解除されるまで待機
+
+### MDL の種類
+
+| ロック種類                | 説明                                              | 代表例                  |
+| ------------------------- | ------------------------------------------------- | ----------------------- |
+| **MDL Shared (S)**        | 読み取り目的のロック。複数セッションで共有可能    | SELECT                  |
+| **MDL Exclusive (X)**     | DDL や書き込み時に取得。他の MDL ロックをブロック | ALTER TABLE, DROP TABLE |
+| **MDL Intention (IS/IX)** | 上位操作用の補助ロック                            | 内部処理で使用          |
+
+---
+
+## 3. DDL（Data Definition Language）
+
+**DDL** はデータベース・テーブルなどの **構造を定義・変更** する SQL です。
+
+### 主な DDL コマンド
+
+| コマンド        | 説明                 | 例                                                |
+| --------------- | -------------------- | ------------------------------------------------- |
+| CREATE DATABASE | データベース作成     | CREATE DATABASE company;                          |
+| DROP DATABASE   | データベース削除     | DROP DATABASE company;                            |
+| CREATE TABLE    | テーブル作成         | CREATE TABLE employees(id INT, name VARCHAR(50)); |
+| ALTER TABLE     | テーブル構造変更     | ALTER TABLE employees ADD COLUMN age INT;         |
+| DROP TABLE      | テーブル削除         | DROP TABLE employees;                             |
+| TRUNCATE TABLE  | データ全削除（高速） | TRUNCATE TABLE employees;                         |
+| RENAME TABLE    | テーブル名変更       | RENAME TABLE employees TO staff;                  |
+
+### DDL と MDL の関係
+
+- DDL 実行時は **MDL Exclusive Lock** が自動取得される
+- 他のセッションの DML/DQL は **DDL 完了まで待機** する場合がある
+
+### トランザクション挙動
+
+- 多くの DDL は **暗黙コミット** を伴う
+- DML トランザクション中に DDL を実行すると、DML が終了するまで待機することがある
+
+---
+
+## 4. DML（Data Manipulation Language）
+
+**DML** はテーブル内のデータを操作する SQL です。
+
+| 操作   | 説明       | 例                                                    |
+| ------ | ---------- | ----------------------------------------------------- |
+| INSERT | データ追加 | INSERT INTO employees (id, name) VALUES (1, 'Alice'); |
+| UPDATE | データ更新 | UPDATE employees SET age = 30 WHERE id = 1;           |
+| DELETE | データ削除 | DELETE FROM employees WHERE id = 1;                   |
+
+### 特徴
+
+- トランザクション内で実行可能（COMMIT/ROLLBACK で確定・取消）
+- 行ロックやページロックがかかる（InnoDB）
+- MDL Shared Lock を自動取得するため、DDL との競合時は待機する
+
+---
+
+## 5. DQL（Data Query Language）
+
+**DQL** はデータの検索・抽出を行う SQL です。
+
+| 操作   | 説明                   | 例                                             |
+| ------ | ---------------------- | ---------------------------------------------- |
+| SELECT | 条件に合うデータを取得 | SELECT id, name FROM employees WHERE age > 25; |
+
+### 特徴
+
+- 読み取り専用
+- MDL Shared Lock を取得（DDL との競合防止）
+- 集計関数・グループ化・並び替えが可能
+
+---
+
+## 6. TCL（Transaction Control Language）と DML/DQL
+
+| 操作      | 説明                           | 例             |
+| --------- | ------------------------------ | -------------- |
+| COMMIT    | トランザクション確定           | COMMIT;        |
+| ROLLBACK  | トランザクション取消           | ROLLBACK;      |
+| SAVEPOINT | 部分的ロールバック用のポイント | SAVEPOINT sp1; |
+
+- DML と密接に関連
+- DDL は通常 **暗黙コミット** なので ROLLBACK 不可
+
+---
+
+## 7. SQL 操作と MDL まとめ
+
+| SQL 種類 | 代表例                    | MDL の種類 | トランザクション挙動 |
+| -------- | ------------------------- | ---------- | -------------------- |
+| DDL      | CREATE TABLE, ALTER TABLE | Exclusive  | 暗黙コミット         |
+| DML      | INSERT, UPDATE, DELETE    | Shared     | 明示コミット可能     |
+| DQL      | SELECT                    | Shared     | 読み取り専用         |
+
+### ポイントまとめ
+
+1. DDL は構造変更＋排他ロック → 他の操作をブロック
+2. DML/DQL はデータ操作＋共有ロック → 同時実行可能だが DDL と競合すると待機
+3. TCL でトランザクション制御 → DML/DQL の整合性を確保
+
+---
+
+## 8. MDL 競合と対策
+
+### 典型的な競合
+
+```sql
+-- セッション1
+ALTER TABLE employees ADD COLUMN age INT;
+
+-- セッション2
+SELECT * FROM employees;  -- セッション1のDDL完了まで待機
+```

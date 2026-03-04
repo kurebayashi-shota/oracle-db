@@ -1,0 +1,267 @@
+﻿# A5:ER FORMAT:21
+# A5:ER ENCODING:UTF8
+# A5:ER Mk-1 Copyright © 2007 m.matsubara
+# A5:SQL Mk-2 Version 2.21.1 Copyright © 1997 - 2026 m.matsubara
+#  https://a5m2.mmatsubara.com
+
+[Manager]
+ProjectName=
+Author=
+MaxEntityRowShow=1000
+ReadOnlyRecommend=0
+PageInfo="Main",2,"A3Landscape",$FFFFFF
+LogicalView=1
+DecodeDomain=0
+ViewFormat=0
+UseNondependenceDashLine=0
+FontName=Tahoma
+FontSize=6
+PaperSize=A4Landscape
+HeaderLeft=
+HeaderCenter=
+HeaderRight=
+FooterLeft=
+FooterCenter=
+FooterRight=
+ShowPageoutRelation=1
+DefaultPkName=%0:s_PKC
+DefaultPkIndexName=%0:s_PKI
+DefaultIndexName=%0:s_IX%1:d
+DefaultFkName=%0:s_FK%1:d
+SqlSeparator=0
+UpperCaseKeyword=0
+ShowTag=1
+ShowCommonAttributes=0
+ShowDisableAttributes=0
+BugFixEntityWidth=1
+
+[Entity]
+PName=areas
+LName=areas
+Comment=
+TableInnerOption=
+TableOption=
+Page=Main
+Left=50
+Top=50
+Field="id","id","bigint unsigned auto_increment","NOT NULL",0,"","",$FFFFFFFF,""
+Field="area_name","area_name","varchar(255)","NOT NULL",,"","",$FFFFFFFF,""
+Field="price","price","int","NOT NULL",,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+Position="Main",50,50
+ZOrder=-1
+
+[Entity]
+PName=cache
+LName=cache
+Comment=
+TableInnerOption=
+TableOption=
+Page=Main
+Left=50
+Top=300
+Field="key","key","varchar(255)","NOT NULL",0,"","",$FFFFFFFF,""
+Field="value","value","mediumtext","NOT NULL",,"","",$FFFFFFFF,""
+Field="expiration","expiration","int","NOT NULL",,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+Position="Main",50,300
+ZOrder=-2
+
+[Entity]
+PName=cache_locks
+LName=cache_locks
+Comment=
+TableInnerOption=
+TableOption=
+Page=Main
+Left=250
+Top=300
+Field="key","key","varchar(255)","NOT NULL",0,"","",$FFFFFFFF,""
+Field="owner","owner","varchar(255)","NOT NULL",,"","",$FFFFFFFF,""
+Field="expiration","expiration","int","NOT NULL",,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+Position="Main",250,300
+ZOrder=-3
+
+[Entity]
+PName=migrations
+LName=migrations
+Comment=
+TableInnerOption=
+TableOption=
+Page=Main
+Left=450
+Top=300
+Field="id","id","int unsigned auto_increment","NOT NULL",0,"","",$FFFFFFFF,""
+Field="migration","migration","varchar(255)","NOT NULL",,"","",$FFFFFFFF,""
+Field="batch","batch","int","NOT NULL",,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+Position="Main",450,300
+ZOrder=-4
+
+[Entity]
+PName=order_areas
+LName=order_areas
+Comment=
+TableInnerOption=
+TableOption=
+Page=Main
+Left=250
+Top=50
+Field="id","id","bigint unsigned auto_increment","NOT NULL",0,"","",$FFFFFFFF,""
+Field="order_id","order_id","bigint unsigned","NOT NULL",,"","",$FFFFFFFF,""
+Field="area_id","area_id","bigint unsigned","NOT NULL",,"","",$FFFFFFFF,""
+Field="created_at","created_at","timestamp",,,"null","",$FFFFFFFF,""
+Field="updated_at","updated_at","timestamp",,,"null","",$FFFFFFFF,""
+IndexInfo="order_areas_order_id_foreign",0,"order_id",""
+Index=order_areas_order_id_foreign=0,order_id
+IndexInfo="order_areas_area_id_foreign",0,"area_id",""
+Index=order_areas_area_id_foreign=0,area_id
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+Position="Main",250,50
+ZOrder=-5
+
+[Entity]
+PName=orders
+LName=orders
+Comment=
+TableInnerOption=
+TableOption=
+Page=Main
+Left=450
+Top=50
+Field="id","id","bigint unsigned auto_increment","NOT NULL",0,"","",$FFFFFFFF,""
+Field="user_id","user_id","bigint unsigned","NOT NULL",,"","",$FFFFFFFF,""
+Field="total_price","total_price","int","NOT NULL",,"","",$FFFFFFFF,""
+Field="created_at","created_at","timestamp",,,"null","",$FFFFFFFF,""
+Field="updated_at","updated_at","timestamp",,,"null","",$FFFFFFFF,""
+IndexInfo="orders_user_id_foreign",0,"user_id",""
+Index=orders_user_id_foreign=0,user_id
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+Position="Main",450,50
+ZOrder=-6
+
+[Entity]
+PName=sessions
+LName=sessions
+Comment=
+TableInnerOption=
+TableOption=
+Page=Main
+Left=650
+Top=300
+Field="id","id","varchar(255)","NOT NULL",0,"","",$FFFFFFFF,""
+Field="user_id","user_id","bigint unsigned",,,"","",$FFFFFFFF,""
+Field="ip_address","ip_address","varchar(45)",,,"","",$FFFFFFFF,""
+Field="user_agent","user_agent","text",,,"","",$FFFFFFFF,""
+Field="payload","payload","longtext","NOT NULL",,"","",$FFFFFFFF,""
+Field="last_activity","last_activity","int","NOT NULL",,"","",$FFFFFFFF,""
+IndexInfo="sessions_user_id_index",0,"user_id",""
+Index=sessions_user_id_index=0,user_id
+IndexInfo="sessions_last_activity_index",0,"last_activity",""
+Index=sessions_last_activity_index=0,last_activity
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+Position="Main",650,300
+ZOrder=-7
+
+[Entity]
+PName=users
+LName=users
+Comment=
+TableInnerOption=
+TableOption=
+Page=Main
+Left=650
+Top=50
+Field="id","id","bigint unsigned auto_increment","NOT NULL",0,"","",$FFFFFFFF,""
+Field="name","name","varchar(255)","NOT NULL",,"","",$FFFFFFFF,""
+Field="email","email","varchar(255)","NOT NULL",,"","",$FFFFFFFF,""
+Field="email_verified_at","email_verified_at","timestamp",,,"null","",$FFFFFFFF,""
+Field="password","password","varchar(255)","NOT NULL",,"","",$FFFFFFFF,""
+Field="remember_token","remember_token","varchar(100)",,,"","",$FFFFFFFF,""
+Field="created_at","created_at","timestamp",,,"null","",$FFFFFFFF,""
+Field="updated_at","updated_at","timestamp",,,"null","",$FFFFFFFF,""
+IndexInfo="users_email_unique",2,"email",""
+Index=users_email_unique=2,email
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+Position="Main",650,50
+ZOrder=-8
+
+[Relation]
+Entity1=users
+Entity2=orders
+RelationType1=2
+RelationType2=3
+Fields1=id
+Fields2=user_id
+Cardinarity1=
+Cardinarity2=
+Position="MAIN",0,6700,5520,1500,R,R,""
+Dependence=0
+Caption=
+PName=
+LineMode=0
+Bar1=670
+Bar2=552
+Bar3=150
+TermPos1=R
+TermPos2=R
+ZOrder=-11
+
+[Relation]
+Entity1=orders
+Entity2=order_areas
+RelationType1=2
+RelationType2=3
+Fields1=id
+Fields2=order_id
+Cardinarity1=
+Cardinarity2=
+Position="MAIN",0,4500,5103,600,R,R,""
+Dependence=0
+Caption=
+PName=
+LineMode=0
+Bar1=450
+Bar2=510
+Bar3=60
+TermPos1=R
+TermPos2=R
+ZOrder=-10
+
+[Relation]
+Entity1=areas
+Entity2=order_areas
+RelationType1=2
+RelationType2=3
+Fields1=id
+Fields2=area_id
+Cardinarity1=
+Cardinarity2=
+Position="MAIN",0,2698,4338,4257,R,R,""
+Dependence=0
+Caption=
+PName=
+LineMode=0
+Bar1=270
+Bar2=434
+Bar3=426
+TermPos1=R
+TermPos2=R
+ZOrder=-9
