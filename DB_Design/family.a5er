@@ -37,7 +37,7 @@ ShowDisableAttributes=0
 BugFixEntityWidth=1
 
 [Entity]
-PName=NEW_ENTITY1
+PName=persons
 LName=persons
 Comment=個人情報(ID,名,生年月日,結婚,死亡,旧姓)
 TableInnerOption=
@@ -50,7 +50,7 @@ Field="名","name","@VARCHAR(16)","NOT NULL",,"","",$FFFFFFFF,""
 Field="所属","family_id","NUMBER(10,0)","NOT NULL",,"","",$FFFFFFFF,""
 Field="生年月日","birth","@DATE","NOT NULL",,"","",$FFFFFFFF,""
 Field="性別","sex","NUMBER(1)",,,"","男:1,女:0,無:NULL",$FFFFFFFF,""
-Field="結婚フラグ","marriage","NUMBER",,,"","未婚:NULL,既婚:family_id",$FFFFFFFF,""
+Field="結婚フラグ","marriage","NUMBER","NOT NULL",,"DEFAULT 0","未婚:0,既婚:1",$FFFFFFFF,""
 Field="親フラグ","parent","NUMBER(1)","NOT NULL",,"DEFAULT 0","親:1,他:0",$FFFFFFFF,""
 Field="死亡フラグ","death","NUMBER(1)","NOT NULL",,"DEFAULT 0","生:0,死:1",$FFFFFFFF,""
 IndexInfo="PRIMARY KEY",1,"id",""
@@ -60,7 +60,7 @@ UsingCommonColumns=0
 EffectMode=None
 Color=$000000
 BkColor=$FFFFFF
-ModifiedDateTime=20260305164714
+ModifiedDateTime=20260306170435
 Position="Main",250,400,188,224
 ZOrder=1
 
@@ -128,7 +128,7 @@ Width=0
 Height=0
 
 [Relation]
-Entity1=NEW_ENTITY1
+Entity1=persons
 Entity2=history
 RelationType1=2
 RelationType2=3
@@ -173,7 +173,7 @@ ZOrder=8
 
 [Relation]
 Entity1=familys
-Entity2=NEW_ENTITY1
+Entity2=persons
 RelationType1=2
 RelationType2=4
 Fields1=id
